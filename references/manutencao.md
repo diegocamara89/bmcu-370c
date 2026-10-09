@@ -87,3 +87,7 @@ E pese a decisao: atualizacao de impressora e o mecanismo classico pelo qual a c
 com BMCU quebra. Se a maquina esta funcionando e voce nao precisa de nada da versao nova, o
 ganho e zero e o risco nao. Se for atualizar, confirme antes que o firmware do BMCU em uso
 declara suporte a versao de destino.
+
+**Caso real (A1):** a 01.08 bloqueou toda impressao com `0500-409D`. A volta para 01.07 falhou
+duas vezes com erro `301` e depois passou; a impressao voltou a rodar. A partir dai a
+impressora oferece a 01.08 a cada reinicio: **cancele**. Tabela completa em `firmware.md`.

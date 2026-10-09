@@ -81,6 +81,20 @@ Ver `firmware.md`.
 > troca de sub-placa, de motor e do modulo inteiro — e saiu com regravacao. Duas causas
 > diferentes no mesmo sintoma.
 
+## Codigos da impressora com BMCU
+
+| Codigo | Significa | O que fazer |
+|---|---|---|
+| HMS `05XX-0400-0001-0044` | "AMS nao certificado / firmware nao atualizado". `XX` e o slot: `00`-`03` = AMS A-D, `10` = AMS Lite | **Nada.** Aviso permanente com qualquer firmware de BMCU; volta a cada boot. Na A1 ate 01.07.02 nao afeta a impressao (README do autor). Nenhuma variante de build o remove |
+| print_error `0500-409D` (`83902621`) | "firmware do AMS nao corresponde a impressora; nao pode continuar" | **Bloqueia.** Vem da impressora em 01.08+. Voltar para 01.07, ou usar OrcaStudio. Regravar o BMCU nao resolve |
+| Falha na atualizacao `301` | a impressora nao conseguiu atualizar/reverter | Codigo nao documentado. Desconecte o BMCU antes (a impressora tenta atualizar os modulos ligados), depois cartao SD com espaco, outra rede, ou iniciar pelo Bambu Studio |
+
+O que suprime o 0044 so na tela do PC e um fatiador modificado (`BambuStudio-BMCU`, do mesmo
+autor). O aviso continua na impressora: o fatiador so deixa de mostrar.
+
+Para ler os codigos sem depender da tela: `print_error` e a lista `hms` vem no relatorio
+MQTT da impressora (`gcode_state` = `RUNNING` com `print_error` 0 e o sinal de que imprime).
+
 ## Tabela de LEDs
 
 > **Atencao a origem:** esta tabela e do manual do firmware do **fabricante** (linha 27,

@@ -46,6 +46,11 @@ Existem tres, e elas **nao** sao intercambiaveis sem atencao:
 | **Type-C (oficial)** | chip CH340 embutido | tem porta USB-C; grava sem adaptador |
 | **370x do Xingchen** | especifica da modificacao microswitch dele | tambem tem CH340 embutido |
 
+Uma Type-C real recebida como reposicao veio marcada **"BMCU V2.2"**, **sem os botoes `R` e
+`B`** (o Flasher entra no bootloader sozinho pelo USB) e com o header de depuracao no verso
+marcado `SCLK SWIO ERx ETx Gnd 3.3`, alem do `GND 24V / B A`. Quem procura os botoes para
+gravar nao vai achar, e nao precisa.
+
 A wiki diz que a Type-C e "identica a versao padrao" fora o CH340 embutido. Se voce for
 trocar uma Original queimada, **a Type-C e o upgrade obvio**: mesma compatibilidade e
 acaba com a fiacao solta na hora de gravar.

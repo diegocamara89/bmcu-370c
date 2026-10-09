@@ -48,6 +48,7 @@ protocolo completo com a impressora participando da decisao de parar.
 | Gravar firmware, ou a gravacao falhou | `references/firmware.md` |
 | Calibrar, ou os LEDs estao piscando estranho | `references/firmware.md` |
 | Canal nao para de alimentar, nao carrega, ou nao liga | `references/diagnostico.md` |
+| Impressora mostra HMS `0044`, bloqueia com `0500-409D`, ou falha ao atualizar | `references/diagnostico.md` e `references/firmware.md` |
 | Limpeza, lubrificante, pecas de desgaste | `references/manutencao.md` |
 
 **Imagens em `assets/`** — `ligacao-gravacao.jpg` e a foto oficial da fiacao do CH340,

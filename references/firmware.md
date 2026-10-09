@@ -7,10 +7,30 @@
 | 0020 | fabricante | A1 1.04 / 1.05 |
 | 0027 | fabricante (4061N), linha Hall | — |
 | 27-5 | fabricante (Stardust), linha duplo micro-switch | A1 1.07 |
-| **V10.5** | **Pawel Jarczak — o mais recente que existe** | A1 1.07.01 e 1.08 |
+| V10.5 | Pawel Jarczak (2026-04) | A1 1.07 |
+| **V11** | **Pawel Jarczak (2026-10)** | A1 ate 1.07.02 (ver abaixo) |
 
-A V10.5 e a ultima versao publicada. O video oficial de calibracao declara compatibilidade
-com **A1 1.07.01**, e o pacote e distribuido tambem para 1.08 — cobre as duas.
+Nao afirme "a mais recente" de memoria: confira as releases do repositorio antes. O Flasher
+no modo `Online` baixa os binarios do branch `main`, que pode ter correcoes depois da tag —
+hash diferente do da tag nao e sinal de arquivo adulterado.
+
+### Firmware da impressora: o que realmente decide se imprime
+
+Desde o firmware 01.05 a A1 exige certificacao do AMS (frames `0x040D` e `0x040E`) e
+**nenhum firmware de BMCU passa nela**. O efeito depende da versao da impressora, nao da
+do BMCU:
+
+| A1 | Efeito |
+|---|---|
+| 01.05 a 01.07.02 | imprime normal; fica so o aviso HMS `0500-0400-0001-0044` |
+| **01.08 ou maior** | **bloqueia** a impressao com `0500-409D`. Trocar o firmware do BMCU nao resolve |
+
+Na 01.08 a unica saida documentada pelo autor e fatiar e mandar pelo **OrcaStudio** (fork
+dele que ignora o erro). A saida limpa e voltar a impressora para 01.07 — testado num caso
+real: o bloqueio sumiu e a impressao rodou. Depois disso, **recuse** a oferta de atualizacao
+que a impressora faz a cada reinicio. Na impressora o tipo deve ser **AMS**, nao AMS Lite.
+
+Ver `diagnostico.md` para os codigos.
 
 Um detalhe que salva tempo: o prefixo do nome indica a **linha**, nao a versao.
 `0027` e a linha Hall do 4061N; `27` e a linha duplo micro-switch do Stardust. `27-5` nao
@@ -26,7 +46,9 @@ e "mais novo" que `0027`, e outro ramo.
 - Multimetro, para as conferencias
 
 Se a placa-mae for a variante **Type-C**, nada disso e necessario: e so um cabo USB, e o
-Flasher cuida de BOOT e RESET sozinho no modo USB.
+Flasher cuida de BOOT e RESET sozinho no modo **USB (AutoDI)**. No Windows ela aparece como
+`USB-SERIAL CH340` (VID `1A86`, PID `7523`). Essa placa nem tem botoes `R` e `B`. Use o
+Flasher **v1.4 ou maior**: a v1.3 nao conhece as opcoes da V11.
 
 ## A ligacao
 
@@ -111,7 +133,7 @@ E normal.
 | Forca de carga | **Standard (A1)** | `high_force` e para P1S ou PTFE muito curvo; `soft_load` e paliativo para mola de alavanca fraca |
 | Autoload | **ligado** | a placa e DM, dois micro-switches; e o modo dela |
 | LED RGB | **desligado** | com ele ligado o LED passa a mostrar a cor do filamento e some o instrumento de diagnostico. Ligue so quando nao estiver investigando nada |
-| Slot | **SOLO** | um BMCU so. `AMS_A` a `AMS_D` sao para multiplas unidades ou retracao maior |
+| Slot | **AMS_AUTO** (V11) ou `AMS_A` | a V11 removeu o `SOLO`. `AMS_AUTO` e o recomendado; `AMS_A` a `AMS_D` sao o modo legado com endereco fixo. Na V10.5 era `SOLO`. Nenhum dos dois muda o aviso de certificacao |
 | Retracao | depende da topologia | ver abaixo |
 
 **Retracao — o erro facil.** O que decide nao e o comprimento do tubo, e **onde fica o
@@ -164,36 +186,28 @@ apagavel.** Ele continua respondendo a `B`+`R` quantas vezes precisar. Religue e
 A documentacao e explicita: **sem calibracao correta o BMCU nao funciona direito.** Nao e
 passo opcional.
 
-## Automatica, no primeiro boot
+## Interativa, no primeiro boot (V11)
 
-A partir da V10.3 o firmware calibra a deteccao de canal vazio no primeiro boot. Depois de
-uma gravacao com apagamento total, o proximo boot **e** o primeiro boot.
+Depois de uma gravacao com apagamento total, o proximo boot **e** o primeiro boot, e a
+calibracao **nao e passiva**: ela espera o operador mexer em cada buffer. Quem so liga e
+espera fica olhando LED piscar para sempre.
 
-1. **Tire todo o filamento dos quatro canais** — antes de ligar. Ligar com filamento em
-   algum canal faz ele calibrar em cima de um valor errado.
+1. **Tire todo o filamento dos quatro canais**, inclusive o que esta so na entrada.
 2. Conecte a impressora com ela desligada, depois ligue.
-3. Deixe rodar sozinho. Nao coloque filamento, nao desligue, nao mexa nos conectores.
+3. Em cada canal, siga o LED. O buffer se manipula pelo **conector metalico do topo**:
+   - **Azul piscando** → empurre o buffer ate o fim, segure cerca de 1 s, solte.
+   - **Vermelho piscando** → puxe o buffer ate o fim, solte.
 
 ## Como saber que terminou
 
-Durante a calibracao, cada canal pisca **azul e vermelho alternando**, um canal por vez,
-varrendo de 1 a 4.
-
-**Terminou quando os quatro canais ficam em branco fixo, sem nenhum piscar.** Enquanto
-houver azul ou vermelho piscando em qualquer canal, ainda esta no meio. No video oficial o
-ciclo completo leva cerca de 90 segundos.
+**Terminou quando os quatro canais ficam com luz fixa, sem nenhum piscar.** Enquanto houver
+azul ou vermelho piscando em qualquer canal, aquele canal ainda espera o gesto.
 
 ## Recalibracao manual
 
-Tire todo o filamento dos quatro canais e segure um buffer em posicao por cerca de
-5 segundos. O buffer se manipula pelo **conector metalico do topo**, que e rosqueado na
-parte movel dele.
-
-> **Nao documentado:** a direcao exata do gesto — puxado, empurrado ou levantado. O texto
-> oficial nao diz. E **levantar tem significado proprio nesta versao**: a V10.5 descarrega
-> o filamento automaticamente quando o buffer e levantado a mao. Ou seja, o gesto errado
-> pode disparar descarregamento em vez de calibracao. Com os canais vazios, como a
-> calibracao exige, isso e inofensivo — mas nao improvise com filamento carregado.
+Com os quatro canais vazios, segure um buffer em posicao por cerca de 5 segundos: ele volta
+ao modo de calibracao acima. Nao faca isso com filamento carregado — levantar o buffer a mao
+tambem e o gesto de descarregar.
 
 ## Depois de carregar: o que muda com AUTOLOAD
 
